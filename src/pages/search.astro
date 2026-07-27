@@ -1,0 +1,241 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Icon from '../components/atoms/Icon.astro';
+---
+
+<MainLayout title="Buscar — LunaPrompt" currentPath="/">
+  <section class="search-page">
+    <div class="search-page__header">
+      <h1 class="search-page__title">Buscar Prompts</h1>
+      <div class="search-page__input-wrap">
+        <Icon name="search" size={18} />
+        <input
+          type="search"
+          id="search-input"
+          class="search-page__input"
+          placeholder="Escribe para buscar..."
+          autofocus
+          aria-label="Buscar prompts"
+        />
+      </div>
+    </div>
+
+    <div id="search-results" class="search-page__results">
+      <p class="search-page__empty" id="search-empty">
+        Escribe algo para buscar entre todos los prompts disponibles.
+      </p>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .search-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    margin-top: var(--space-8);
+  }
+
+  .search-page__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .search-page__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .search-page__input-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-xl);
+    color: var(--color-text-muted);
+    transition: border-color var(--transition-fast);
+  }
+
+  .search-page__input-wrap:focus-within {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 3px var(--color-accent-subtle);
+  }
+
+  .search-page__input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--color-text-primary);
+    font-size: var(--text-lg);
+  }
+
+  .search-page__input::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .search-page__results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .search-page__empty {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .search-page__no-results {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-sm);
+  }
+</style>
+
+<style is:global>
+  .search-result-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-normal);
+  }
+
+  .search-result-card:hover {
+    background: var(--color-bg-card-hover);
+    border-color: var(--color-border-default);
+    transform: translateY(-1px);
+  }
+
+  .search-result-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .search-result-card__title {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .search-result-card__badge {
+    padding: 2px var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    border-radius: var(--radius-full);
+    background: var(--color-accent-subtle);
+    color: var(--color-accent-secondary);
+  }
+
+  .search-result-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .search-result-card__tags {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-top: var(--space-1);
+  }
+
+  .search-result-card__tag {
+    padding: 1px var(--space-2);
+    font-size: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-tag-bg);
+    color: var(--color-tag-text);
+    border: 1px solid var(--color-tag-border);
+  }
+</style>
+
+<script>
+  const input = document.getElementById('search-input') as HTMLInputElement;
+  const resultsContainer = document.getElementById('search-results') as HTMLElement;
+  const emptyMessage = document.getElementById('search-empty') as HTMLElement;
+
+  interface SearchEntry {
+    slug: string;
+    title: string;
+    description: string;
+    categorySlug: string;
+    subcategorySlug: string;
+    tags: string[];
+    difficulty: string;
+  }
+
+  let searchIndex: SearchEntry[] = [];
+
+  async function loadIndex() {
+    const res = await fetch('/search.json');
+    searchIndex = await res.json();
+  }
+
+  function renderResults(results: SearchEntry[]) {
+    if (results.length === 0) {
+      resultsContainer.innerHTML = '<p class="search-page__no-results">No se encontraron resultados.</p>';
+      return;
+    }
+
+    resultsContainer.innerHTML = results.map((item) => `
+      <a href="/prompts/${item.slug}" class="search-result-card">
+        <div class="search-result-card__header">
+          <span class="search-result-card__title">${item.title}</span>
+          <span class="search-result-card__badge">${item.difficulty}</span>
+        </div>
+        <p class="search-result-card__description">${item.description}</p>
+        <div class="search-result-card__tags">
+          ${item.tags.map((tag) => `<span class="search-result-card__tag">${tag}</span>`).join('')}
+        </div>
+      </a>
+    `).join('');
+  }
+
+  function search(query: string) {
+    if (!query.trim()) {
+      resultsContainer.innerHTML = '';
+      resultsContainer.appendChild(emptyMessage);
+      emptyMessage.style.display = '';
+      return;
+    }
+
+    emptyMessage.style.display = 'none';
+    const q = query.toLowerCase();
+
+    const results = searchIndex.filter((entry) =>
+      entry.title.toLowerCase().includes(q) ||
+      entry.description.toLowerCase().includes(q) ||
+      entry.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+      entry.categorySlug.includes(q) ||
+      entry.subcategorySlug.includes(q)
+    );
+
+    renderResults(results);
+  }
+
+  // Load index and handle URL params
+  loadIndex().then(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) {
+      input.value = q;
+      search(q);
+    }
+  });
+
+  input.addEventListener('input', () => search(input.value));
+</script>

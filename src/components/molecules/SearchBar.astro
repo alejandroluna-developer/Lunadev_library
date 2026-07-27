@@ -14,15 +14,16 @@ const {
 } = Astro.props;
 ---
 
-<div class:list={['search-bar', `search-bar--${size}`, className]}>
+<form action="/search" method="GET" class:list={['search-bar', `search-bar--${size}`, className]} role="search">
   <Icon name="search" size={size === 'lg' ? 18 : 15} class="search-bar__icon" />
   <input
     type="search"
+    name="q"
     class="search-bar__input"
     placeholder={placeholder}
     aria-label="Search"
   />
-</div>
+</form>
 
 <style>
   .search-bar {

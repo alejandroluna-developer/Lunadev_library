@@ -21,7 +21,7 @@ export const footerNavItems: NavItem[] = [
 
 export const mobileBottomNavItems: NavItem[] = [
   { label: 'Explorar', href: '/', icon: 'compass' },
-  { label: 'Buscar', href: '#', icon: 'search' },
+  { label: 'Buscar', href: '/search', icon: 'search' },
   { label: 'Guardados', href: '#', icon: 'bookmark' },
   { label: 'Info', href: '/about', icon: 'info' },
 ];
