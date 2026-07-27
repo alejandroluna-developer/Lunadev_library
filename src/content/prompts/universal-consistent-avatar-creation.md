@@ -9,7 +9,7 @@ createdAt: "2025-07-26"
 updatedAt: "2025-07-26"
 isFeatured: true
 mediaType: "comparison"
-beforeImage: "/images/prompts/universal-consistent-avatar-creation/imagen_antes.jpg"
+beforeImage: "/images/prompts/universal-consistent-avatar-creation/imagen_antes.png"
 afterImage: "/images/prompts/universal-consistent-avatar-creation/imagen_despues.png"
 beforeCaption: "Foto de referencia"
 afterCaption: "Avatar generado"
