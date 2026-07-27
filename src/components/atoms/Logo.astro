@@ -1,0 +1,36 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const { size = 'md', class: className = '' } = Astro.props;
+---
+
+<a href="/" class:list={['logo', `logo--${size}`, className]} aria-label="LunaPrompt Home">
+  <span class="logo__text">LunaPrompt</span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-text-primary);
+  }
+
+  .logo--sm .logo__text {
+    font-size: var(--text-lg);
+  }
+
+  .logo--md .logo__text {
+    font-size: var(--text-2xl);
+  }
+
+  .logo--lg .logo__text {
+    font-size: var(--text-3xl);
+  }
+</style>
