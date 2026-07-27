@@ -1,0 +1,259 @@
+---
+import MainLayout from '../../../../layouts/MainLayout.astro';
+import Breadcrumbs from '../../../../components/molecules/Breadcrumbs.astro';
+import PromptCard from '../../../../components/organisms/PromptCard.astro';
+import Badge from '../../../../components/atoms/Badge.astro';
+import Icon from '../../../../components/atoms/Icon.astro';
+import Button from '../../../../components/atoms/Button.astro';
+import { categories, getCategoryBySlug, getSubcategoryBySlug } from '../../../../data/categories';
+import { getAllPrompts, getPromptsByProject } from '../../../../data/prompts';
+
+export async function getStaticPaths() {
+  const allPrompts = await getAllPrompts();
+  const paths: { params: { category: string; subcategory: string; projectSlug: string }; props: { projectName: string; projectDescription?: string } }[] = [];
+
+  const seen = new Set<string>();
+
+  for (const prompt of allPrompts) {
+    if (!prompt.project) continue;
+    const key = `${prompt.categorySlug}/${prompt.subcategorySlug}/${prompt.project.slug}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    paths.push({
+      params: {
+        category: prompt.categorySlug,
+        subcategory: prompt.subcategorySlug,
+        projectSlug: prompt.project.slug,
+      },
+      props: {
+        projectName: prompt.project.name,
+        projectDescription: prompt.project.description,
+      },
+    });
+  }
+
+  return paths;
+}
+
+const { category: catSlug, subcategory: subSlug, projectSlug } = Astro.params;
+const { projectName, projectDescription } = Astro.props;
+
+const category = getCategoryBySlug(catSlug!);
+const subcategory = getSubcategoryBySlug(catSlug!, subSlug!);
+
+if (!category || !subcategory) {
+  return Astro.redirect('/404');
+}
+
+const prompts = await getPromptsByProject(projectSlug!);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: category.name, href: `/categories/${category.slug}` },
+  { label: subcategory.name, href: `/categories/${category.slug}/${subcategory.slug}` },
+  { label: projectName },
+];
+---
+
+<MainLayout
+  title={`${projectName} — ${subcategory.name} — LunaPrompt`}
+  currentPath={`/categories/${category.slug}`}
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section class="project-header">
+    <div class="project-header__icon">
+      <Icon name="code" size={24} />
+    </div>
+    <div class="project-header__content">
+      <h1 class="project-header__title">{projectName}</h1>
+      {projectDescription && (
+        <p class="project-header__description">{projectDescription}</p>
+      )}
+      <div class="project-header__meta">
+        <Badge variant="accent" size="md">{prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}</Badge>
+        {prompts[0]?.project?.videoUrl && (
+          <a href={prompts[0].project.videoUrl} target="_blank" rel="noopener noreferrer" class="project-header__video-link">
+            <Icon name="video" size={14} />
+            <span>Ver video</span>
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="project-prompts">
+    {prompts.map((prompt, index) => (
+      <div class="project-prompt-item">
+        <div class="project-prompt-item__order">
+          <span class="project-prompt-item__number">{index + 1}</span>
+          {index < prompts.length - 1 && <div class="project-prompt-item__line" />}
+        </div>
+        <div class="project-prompt-item__card">
+          <PromptCard prompt={prompt} />
+        </div>
+      </div>
+    ))}
+  </section>
+
+  {prompts.length === 0 && (
+    <section class="empty-state">
+      <Icon name="terminal" size={48} />
+      <h3 class="empty-state__title">Sin prompts aún</h3>
+      <p class="empty-state__description">
+        Los prompts de este proyecto están siendo preparados.
+      </p>
+      <Button variant="secondary" href={`/categories/${category.slug}/${subcategory.slug}`}>
+        <span>Volver a {subcategory.name}</span>
+      </Button>
+    </section>
+  )}
+</MainLayout>
+
+<style>
+  .project-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-5);
+    margin: var(--space-8) 0 var(--space-8);
+  }
+
+  .project-header__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    background: var(--color-accent-subtle);
+    color: var(--color-accent-secondary);
+    flex-shrink: 0;
+  }
+
+  .project-header__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .project-header__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .project-header__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 600px;
+  }
+
+  .project-header__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .project-header__video-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-accent-secondary);
+    text-decoration: none;
+    font-weight: var(--weight-medium);
+    transition: color var(--transition-fast);
+  }
+
+  .project-header__video-link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .project-prompts {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-prompt-item {
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  .project-prompt-item__order {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  .project-prompt-item__number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent-subtle);
+    color: var(--color-accent-secondary);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    flex-shrink: 0;
+  }
+
+  .project-prompt-item__line {
+    width: 2px;
+    flex: 1;
+    background: var(--color-border-default);
+    margin-block: var(--space-2);
+  }
+
+  .project-prompt-item__card {
+    flex: 1;
+    padding-bottom: var(--space-5);
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-16);
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+
+  .empty-state__title {
+    font-size: var(--text-xl);
+    color: var(--color-text-secondary);
+  }
+
+  .empty-state__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .project-header {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .project-header__title {
+      font-size: var(--text-2xl);
+    }
+
+    .project-prompt-item__order {
+      width: 24px;
+    }
+
+    .project-prompt-item__number {
+      width: 24px;
+      height: 24px;
+      font-size: var(--text-xs);
+    }
+  }
+</style>

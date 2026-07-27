@@ -32,6 +32,16 @@ export interface Prompt {
   updatedAt: string;
   isFeatured?: boolean;
   author?: Author;
+  project?: Project;
+}
+
+export interface Project {
+  slug: string;
+  name: string;
+  description?: string;
+  order: number;
+  totalParts?: number;
+  videoUrl?: string;
 }
 
 export interface Author {

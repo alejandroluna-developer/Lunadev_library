@@ -6,7 +6,7 @@ import FeaturedCard from '../../../components/organisms/FeaturedCard.astro';
 import Button from '../../../components/atoms/Button.astro';
 import Icon from '../../../components/atoms/Icon.astro';
 import { categories, getCategoryBySlug, getSubcategoryBySlug } from '../../../data/categories';
-import { getPromptsBySubcategory, getFeaturedPrompts } from '../../../data/prompts';
+import { getPromptsBySubcategory, getFeaturedPrompts, getProjectsInSubcategory } from '../../../data/prompts';
 
 export function getStaticPaths() {
   const paths: { params: { category: string; subcategory: string } }[] = [];
@@ -27,8 +27,12 @@ if (!category || !subcategory) {
 }
 
 const prompts = await getPromptsBySubcategory(subcategory.slug);
+const projects = await getProjectsInSubcategory(subcategory.slug);
 const allFeatured = await getFeaturedPrompts();
 const featuredPrompt = allFeatured.find(p => p.subcategorySlug === subcategory.slug);
+
+const hasProjects = projects.length > 0;
+const nonProjectPrompts = prompts.filter((p) => !p.project);
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
@@ -60,14 +64,38 @@ const breadcrumbs = [
     </div>
   </section>
 
-  <section class="prompts-grid">
-    {prompts.map((prompt) => (
-      <PromptCard
-        prompt={prompt}
-        variant={prompt.isFeatured ? 'featured' : 'default'}
-      />
-    ))}
-  </section>
+  {hasProjects && (
+    <section class="projects-grid">
+      {projects.map((project) => (
+        <a class="project-card" href={`/categories/${category.slug}/${subcategory.slug}/${project.slug}`}>
+          <div class="project-card__icon">
+            <Icon name="code" size={20} />
+          </div>
+          <div class="project-card__content">
+            <h3 class="project-card__title">{project.name}</h3>
+            {project.description && (
+              <p class="project-card__description">{project.description}</p>
+            )}
+            <span class="project-card__meta">{project.promptCount} {project.promptCount === 1 ? 'prompt' : 'prompts'}</span>
+          </div>
+          <div class="project-card__arrow">
+            <Icon name="arrow-right" size={16} />
+          </div>
+        </a>
+      ))}
+    </section>
+  )}
+
+  {nonProjectPrompts.length > 0 && (
+    <section class="prompts-grid">
+      {nonProjectPrompts.map((prompt) => (
+        <PromptCard
+          prompt={prompt}
+          variant={prompt.isFeatured ? 'featured' : 'default'}
+        />
+      ))}
+    </section>
+  )}
 
   {featuredPrompt && (
     <section class="featured-section">
@@ -75,7 +103,7 @@ const breadcrumbs = [
     </section>
   )}
 
-  {prompts.length === 0 && (
+  {prompts.length === 0 && projects.length === 0 && (
     <section class="empty-state">
       <Icon name="search" size={48} class="empty-state__icon" />
       <h3 class="empty-state__title">No prompts yet</h3>
@@ -128,6 +156,78 @@ const breadcrumbs = [
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-6);
+  }
+
+  .projects-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .project-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-normal);
+  }
+
+  .project-card:hover {
+    background: var(--color-bg-card-hover);
+    border-color: var(--color-border-default);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .project-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--color-accent-subtle);
+    color: var(--color-accent-secondary);
+    flex-shrink: 0;
+  }
+
+  .project-card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .project-card__title {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .project-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .project-card__meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+  }
+
+  .project-card__arrow {
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .project-card:hover .project-card__arrow {
+    color: var(--color-accent-secondary);
+    transform: translateX(2px);
   }
 
   .featured-section {
@@ -183,6 +283,16 @@ const breadcrumbs = [
 
     .page-header__title {
       font-size: var(--text-2xl);
+    }
+
+    .project-card {
+      padding: var(--space-4);
+      gap: var(--space-3);
+    }
+
+    .project-card__icon {
+      width: 40px;
+      height: 40px;
     }
   }
 </style>

@@ -42,6 +42,14 @@ export const categories: Category[] = [
         icon: 'layers',
         parentCategorySlug: 'desarrollo-de-software',
       },
+      {
+        id: '1-5',
+        name: 'Proyectos de Contenido',
+        slug: 'proyectos-de-contenido',
+        description: 'Prompts organizados por proyecto usados en videos de TikTok. Cada proyecto agrupa los prompts utilizados para construirlo paso a paso.',
+        icon: 'video',
+        parentCategorySlug: 'desarrollo-de-software',
+      },
     ],
   },
   {

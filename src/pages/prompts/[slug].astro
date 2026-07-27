@@ -8,6 +8,7 @@ import Icon from '../../components/atoms/Icon.astro';
 import BeforeAfterSlider from '../../components/organisms/BeforeAfterSlider.astro';
 import ImageGallery from '../../components/organisms/ImageGallery.astro';
 import { getCategoryBySlug, getSubcategoryBySlug } from '../../data/categories';
+import { getPromptsByProject } from '../../data/prompts';
 
 export async function getStaticPaths() {
   const entries = await getCollection('prompts');
@@ -25,10 +26,26 @@ const rawContent = entry.body || '';
 const category = getCategoryBySlug(prompt.categorySlug);
 const subcategory = getSubcategoryBySlug(prompt.categorySlug, prompt.subcategorySlug);
 
+// Project navigation
+let prevPrompt: { slug: string; title: string } | null = null;
+let nextPrompt: { slug: string; title: string } | null = null;
+
+if (prompt.project) {
+  const projectPrompts = await getPromptsByProject(prompt.project.slug);
+  const currentIndex = projectPrompts.findIndex((p) => p.slug === entry.id);
+  if (currentIndex > 0) {
+    prevPrompt = { slug: projectPrompts[currentIndex - 1].slug, title: projectPrompts[currentIndex - 1].title };
+  }
+  if (currentIndex < projectPrompts.length - 1) {
+    nextPrompt = { slug: projectPrompts[currentIndex + 1].slug, title: projectPrompts[currentIndex + 1].title };
+  }
+}
+
 const breadcrumbs = [
   { label: 'Home', href: '/' },
   { label: category?.name || 'Category', href: `/categories/${prompt.categorySlug}` },
   { label: subcategory?.name || 'Subcategory', href: `/categories/${prompt.categorySlug}/${prompt.subcategorySlug}` },
+  ...(prompt.project ? [{ label: prompt.project.name, href: `/categories/${prompt.categorySlug}/${prompt.subcategorySlug}/${prompt.project.slug}` }] : []),
   { label: prompt.title },
 ];
 
@@ -115,6 +132,31 @@ const tips = [
           <pre class="prompt-detail__content-raw" id="prompt-content-raw" hidden><code>{rawContent}</code></pre>
         </div>
       </section>
+
+      {(prevPrompt || nextPrompt) && (
+        <nav class="project-nav" aria-label="Project navigation">
+          {prompt.project && (
+            <span class="project-nav__label">
+              <Icon name="layers" size={14} />
+              <span>Parte {prompt.project.order} de {prompt.project.totalParts || '?'} — {prompt.project.name}</span>
+            </span>
+          )}
+          <div class="project-nav__links">
+            {prevPrompt ? (
+              <a href={`/prompts/${prevPrompt.slug}`} class="project-nav__link project-nav__link--prev">
+                <Icon name="arrow-right" size={14} />
+                <span>{prevPrompt.title}</span>
+              </a>
+            ) : <div />}
+            {nextPrompt ? (
+              <a href={`/prompts/${nextPrompt.slug}`} class="project-nav__link project-nav__link--next">
+                <span>{nextPrompt.title}</span>
+                <Icon name="arrow-right" size={14} />
+              </a>
+            ) : <div />}
+          </div>
+        </nav>
+      )}
     </div>
 
     <aside class="prompt-detail__sidebar">
@@ -248,6 +290,58 @@ const tips = [
     font-size: var(--text-xs);
     color: var(--color-text-secondary);
     text-align: center;
+  }
+
+  .project-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+  }
+
+  .project-nav__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: var(--weight-medium);
+  }
+
+  .project-nav__links {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .project-nav__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-accent-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .project-nav__link:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .project-nav__link--prev {
+    flex-direction: row;
+  }
+
+  .project-nav__link--prev :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  .project-nav__link--next {
+    margin-left: auto;
   }
 
   .prompt-detail__content-card {
