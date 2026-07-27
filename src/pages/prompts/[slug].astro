@@ -5,6 +5,8 @@ import Breadcrumbs from '../../components/molecules/Breadcrumbs.astro';
 import Badge from '../../components/atoms/Badge.astro';
 import Button from '../../components/atoms/Button.astro';
 import Icon from '../../components/atoms/Icon.astro';
+import BeforeAfterSlider from '../../components/organisms/BeforeAfterSlider.astro';
+import ImageGallery from '../../components/organisms/ImageGallery.astro';
 import { getCategoryBySlug, getSubcategoryBySlug } from '../../data/categories';
 
 export async function getStaticPaths() {
@@ -59,6 +61,35 @@ const tips = [
           <p class="prompt-detail__description">{prompt.description}</p>
         </div>
       </section>
+
+      {prompt.mediaType === 'comparison' && prompt.beforeImage && prompt.afterImage && (
+        <section class="prompt-detail__media">
+          <h2 class="prompt-detail__section-title">Result</h2>
+          <BeforeAfterSlider
+            beforeImage={prompt.beforeImage}
+            afterImage={prompt.afterImage}
+            beforeCaption={prompt.beforeCaption}
+            afterCaption={prompt.afterCaption}
+          />
+        </section>
+      )}
+
+      {prompt.mediaType === 'image' && prompt.gallery && prompt.gallery.length > 0 && (
+        <section class="prompt-detail__media">
+          <h2 class="prompt-detail__section-title">Result</h2>
+          <ImageGallery images={prompt.gallery} />
+        </section>
+      )}
+
+      {prompt.mediaType === 'image' && !prompt.gallery && prompt.afterImage && (
+        <section class="prompt-detail__media">
+          <h2 class="prompt-detail__section-title">Result</h2>
+          <div class="prompt-detail__single-image">
+            <img src={prompt.afterImage} alt={prompt.afterCaption || 'Prompt result'} loading="lazy" />
+            {prompt.afterCaption && <span class="prompt-detail__image-caption">{prompt.afterCaption}</span>}
+          </div>
+        </section>
+      )}
 
       <section class="prompt-detail__content">
         <div class="prompt-detail__content-card">
@@ -184,6 +215,39 @@ const tips = [
     font-size: var(--text-base);
     color: var(--color-text-secondary);
     line-height: var(--leading-relaxed);
+  }
+
+  .prompt-detail__media {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .prompt-detail__single-image {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-border-card);
+  }
+
+  .prompt-detail__single-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .prompt-detail__image-caption {
+    position: absolute;
+    bottom: var(--space-3);
+    left: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-bg-overlay);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    text-align: center;
   }
 
   .prompt-detail__content-card {

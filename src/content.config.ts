@@ -21,6 +21,15 @@ const promptsCollection = defineCollection({
       avatar: z.string().optional(),
       role: z.string().optional(),
     }).optional(),
+    mediaType: z.enum(['none', 'image', 'video', 'comparison']).default('none'),
+    beforeImage: z.string().optional(),
+    afterImage: z.string().optional(),
+    beforeCaption: z.string().optional(),
+    afterCaption: z.string().optional(),
+    gallery: z.array(z.object({
+      src: z.string(),
+      caption: z.string().optional(),
+    })).optional(),
   }),
 });
 
