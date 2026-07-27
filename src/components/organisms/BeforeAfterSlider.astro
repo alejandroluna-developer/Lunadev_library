@@ -47,21 +47,38 @@ const {
   .ba-slider__container {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 10;
     overflow: hidden;
     cursor: ew-resize;
+    background: var(--color-bg-primary);
   }
 
-  .ba-slider__image {
+  .ba-slider__image--after {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .ba-slider__image--after img {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+  }
+
+  .ba-slider__image--before {
     position: absolute;
     inset: 0;
+    clip-path: inset(0 50% 0 0);
+    z-index: 2;
     overflow: hidden;
   }
 
-  .ba-slider__image img {
+  .ba-slider__image--before img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center;
+    display: block;
     pointer-events: none;
   }
 
