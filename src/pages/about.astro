@@ -3,43 +3,44 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Breadcrumbs from '../components/molecules/Breadcrumbs.astro';
 import CodeBlock from '../components/molecules/CodeBlock.astro';
 import Icon from '../components/atoms/Icon.astro';
-import Button from '../components/atoms/Button.astro';
 
 const breadcrumbs = [
   { label: 'Home', href: '/' },
-  { label: 'About' },
+  { label: 'Acerca de' },
 ];
 
-const philosophyCode = `const Quality = "Uncompromised";
-const Speed = "Optimized";
-const Focus = "Absolute";
+const philosophyCode = `const architecture = "Clean & Scalable";
+const stack = ["React", "Next.js", "Astro", "Flutter"];
+const focus = "Production-Ready AI Integration";
 
-function initializeFlowState() {
-  return prompts.filter(p => p.reliability > 0.99);
+function buildPrompt(intent: string) {
+  return prompts.engineer(intent, {
+    precision: true,
+    deterministic: true,
+  });
 }`;
 
-const pillars = [
-  { title: 'Precision', description: 'Deterministic outcomes through rigorous prompt syntax and structured templates.', icon: 'target' },
-  { title: 'Security', description: 'Integrated injection protection and system role fortification for production LLMs.', icon: 'shield' },
-  { title: 'Efficiency', description: 'Optimized token count to reduce latency and API overhead without losing context.', icon: 'zap' },
+const expertise = [
+  { title: 'Frontend', description: 'React, Next.js, Angular, Astro, Tailwind CSS', icon: 'layout' },
+  { title: 'Mobile', description: 'Flutter, Ionic, React Native', icon: 'smartphone' },
+  { title: 'Backend', description: 'Node.js, Firebase, SQL/NoSQL', icon: 'server' },
 ];
 
 const connectLinks = [
-  { label: 'GitHub Repository', href: '#', icon: 'github' },
-  { label: 'Community Discord', href: '#', icon: 'users' },
-  { label: 'contact@lunafrontdev.io', href: '#', icon: 'mail' },
+  { label: 'Portafolio', href: 'https://alejandro-luna-miranda.web.app/', icon: 'external-link' },
+  { label: 'GitHub', href: 'https://github.com/alejandroluna-developer', icon: 'github' },
 ];
 ---
 
-<MainLayout title="About — LunaPrompt" currentPath="/about">
+<MainLayout title="Acerca de — LunaPrompt" currentPath="/about">
   <Breadcrumbs items={breadcrumbs} />
 
   <section class="about-hero">
     <div class="about-hero__content">
-      <h1 class="about-hero__title">About LunaPrompt Library</h1>
+      <h1 class="about-hero__title">Acerca de LunaPrompt</h1>
       <p class="about-hero__description">
-        A specialized prompt engineering repository designed for the elite developer ecosystem.
-        We bridge the gap between creative intent and machine execution.
+        Una librería curada de prompts de ingeniería diseñada para desarrolladores que exigen precisión,
+        arquitectura limpia y resultados determinísticos en sus interacciones con LLMs.
       </p>
     </div>
   </section>
@@ -50,22 +51,22 @@ const connectLinks = [
         <div class="mission-card__icon">
           <Icon name="compass" size={20} />
         </div>
-        <h2 class="mission-card__title">Our Mission</h2>
+        <h2 class="mission-card__title">La Misión</h2>
       </div>
       <p class="mission-card__description">
-        LunaPrompt was born from a simple realization: the gap between "working" AI and
-        "production-ready" AI lies in the precision of the prompt. LunaFrontDev established
-        this library to provide developers with a rigorous framework for prompt engineering
-        that prioritizes deterministic outcomes, security, and computational efficiency.
+        LunaPrompt nace de una necesidad real: la brecha entre un prompt que "funciona" y uno
+        listo para producción está en la precisión de su ingeniería. Esta librería provee
+        frameworks rigurosos para prompt engineering que priorizan resultados determinísticos,
+        arquitecturas escalables y eficiencia computacional.
       </p>
       <div class="mission-card__pillars">
-        {pillars.map((pillar) => (
+        {expertise.map((item) => (
           <div class="pillar">
             <div class="pillar__header">
-              <Icon name={pillar.icon} size={16} />
-              <h3 class="pillar__title">{pillar.title}</h3>
+              <Icon name={item.icon} size={16} />
+              <h3 class="pillar__title">{item.title}</h3>
             </div>
-            <p class="pillar__description">{pillar.description}</p>
+            <p class="pillar__description">{item.description}</p>
           </div>
         ))}
       </div>
@@ -73,29 +74,33 @@ const connectLinks = [
 
     <div class="about-side">
       <section class="team-card">
-        <h2 class="team-card__title">LunaFrontDev</h2>
+        <h2 class="team-card__title">Alejandro Luna</h2>
         <p class="team-card__description">
-          We are a specialized engineering lab focused on the intersection of Frontend
-          Architecture and Large Language Models. Based in the digital ether, we build tools
-          that empower the next generation of software engineers.
+          Ingeniero de Sistemas de la Universidad de Ibagué. Especialista en Frontend y Mobile
+          con experiencia liderando células de desarrollo en el sector financiero y construyendo
+          soluciones empresariales de alto impacto.
+        </p>
+        <p class="team-card__description">
+          Combina la rigurosidad técnica del sector bancario con la agilidad de tecnologías modernas,
+          diseñando software que impulsa el crecimiento real de los negocios a través de la innovación técnica.
         </p>
         <div class="team-card__author">
           <div class="team-card__avatar">
             <Icon name="users" size={20} />
           </div>
           <div class="team-card__author-info">
-            <span class="team-card__author-role">Lead Engineer</span>
-            <span class="team-card__author-name">LunaFrontDev</span>
+            <span class="team-card__author-role">Frontend & Mobile Developer</span>
+            <span class="team-card__author-name">@LunaFrontDev</span>
           </div>
         </div>
       </section>
 
       <section class="connect-card">
-        <h2 class="connect-card__title">Connect</h2>
+        <h2 class="connect-card__title">Conectar</h2>
         <ul class="connect-card__list">
           {connectLinks.map((link) => (
             <li>
-              <a href={link.href} class="connect-card__link">
+              <a href={link.href} target="_blank" rel="noopener noreferrer" class="connect-card__link">
                 <span>{link.label}</span>
                 <Icon name="external-link" size={14} />
               </a>
@@ -107,7 +112,7 @@ const connectLinks = [
   </div>
 
   <section class="philosophy-section">
-    <h2 class="philosophy-section__title">Our Engineering Philosophy</h2>
+    <h2 class="philosophy-section__title">Filosofía de Ingeniería</h2>
     <CodeBlock
       code={philosophyCode}
       language="typescript"
