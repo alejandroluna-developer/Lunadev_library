@@ -1,0 +1,361 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Breadcrumbs from '../components/molecules/Breadcrumbs.astro';
+import CodeBlock from '../components/molecules/CodeBlock.astro';
+import Icon from '../components/atoms/Icon.astro';
+import Button from '../components/atoms/Button.astro';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'About' },
+];
+
+const philosophyCode = `const Quality = "Uncompromised";
+const Speed = "Optimized";
+const Focus = "Absolute";
+
+function initializeFlowState() {
+  return prompts.filter(p => p.reliability > 0.99);
+}`;
+
+const pillars = [
+  { title: 'Precision', description: 'Deterministic outcomes through rigorous prompt syntax and structured templates.', icon: 'target' },
+  { title: 'Security', description: 'Integrated injection protection and system role fortification for production LLMs.', icon: 'shield' },
+  { title: 'Efficiency', description: 'Optimized token count to reduce latency and API overhead without losing context.', icon: 'zap' },
+];
+
+const connectLinks = [
+  { label: 'GitHub Repository', href: '#', icon: 'github' },
+  { label: 'Community Discord', href: '#', icon: 'users' },
+  { label: 'contact@lunafrontdev.io', href: '#', icon: 'mail' },
+];
+---
+
+<MainLayout title="About — LunaPrompt" currentPath="/about">
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section class="about-hero">
+    <div class="about-hero__content">
+      <h1 class="about-hero__title">About LunaPrompt Library</h1>
+      <p class="about-hero__description">
+        A specialized prompt engineering repository designed for the elite developer ecosystem.
+        We bridge the gap between creative intent and machine execution.
+      </p>
+    </div>
+  </section>
+
+  <div class="about-grid">
+    <section class="mission-card">
+      <div class="mission-card__header">
+        <div class="mission-card__icon">
+          <Icon name="compass" size={20} />
+        </div>
+        <h2 class="mission-card__title">Our Mission</h2>
+      </div>
+      <p class="mission-card__description">
+        LunaPrompt was born from a simple realization: the gap between "working" AI and
+        "production-ready" AI lies in the precision of the prompt. LunaFrontDev established
+        this library to provide developers with a rigorous framework for prompt engineering
+        that prioritizes deterministic outcomes, security, and computational efficiency.
+      </p>
+      <div class="mission-card__pillars">
+        {pillars.map((pillar) => (
+          <div class="pillar">
+            <div class="pillar__header">
+              <Icon name={pillar.icon} size={16} />
+              <h3 class="pillar__title">{pillar.title}</h3>
+            </div>
+            <p class="pillar__description">{pillar.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <div class="about-side">
+      <section class="team-card">
+        <h2 class="team-card__title">LunaFrontDev</h2>
+        <p class="team-card__description">
+          We are a specialized engineering lab focused on the intersection of Frontend
+          Architecture and Large Language Models. Based in the digital ether, we build tools
+          that empower the next generation of software engineers.
+        </p>
+        <div class="team-card__author">
+          <div class="team-card__avatar">
+            <Icon name="users" size={20} />
+          </div>
+          <div class="team-card__author-info">
+            <span class="team-card__author-role">Lead Engineer</span>
+            <span class="team-card__author-name">LunaFrontDev</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="connect-card">
+        <h2 class="connect-card__title">Connect</h2>
+        <ul class="connect-card__list">
+          {connectLinks.map((link) => (
+            <li>
+              <a href={link.href} class="connect-card__link">
+                <span>{link.label}</span>
+                <Icon name="external-link" size={14} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <section class="philosophy-section">
+    <h2 class="philosophy-section__title">Our Engineering Philosophy</h2>
+    <CodeBlock
+      code={philosophyCode}
+      language="typescript"
+      filename="philosophy.ts"
+    />
+  </section>
+</MainLayout>
+
+<style>
+  .about-hero {
+    margin: var(--space-8) 0;
+    padding: var(--space-12) var(--space-8);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-xl);
+    text-align: center;
+  }
+
+  .about-hero__content {
+    max-width: 700px;
+    margin-inline: auto;
+  }
+
+  .about-hero__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-hero__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  .mission-card {
+    padding: var(--space-8);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .mission-card__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .mission-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--color-accent-subtle);
+    border-radius: var(--radius-md);
+    color: var(--color-accent-secondary);
+  }
+
+  .mission-card__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .mission-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .mission-card__pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .pillar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .pillar__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-accent-secondary);
+  }
+
+  .pillar__title {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .pillar__description {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .about-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .team-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .team-card__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .team-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .team-card__author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .team-card__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    color: var(--color-text-tertiary);
+  }
+
+  .team-card__author-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .team-card__author-role {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .team-card__author-name {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .connect-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .connect-card__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .connect-card__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .connect-card__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .connect-card__link:hover {
+    background: var(--color-bg-elevated);
+    border-color: var(--color-border-default);
+    color: var(--color-text-primary);
+  }
+
+  .philosophy-section {
+    margin-bottom: var(--space-8);
+  }
+
+  .philosophy-section__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  @media (max-width: 1024px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mission-card__pillars {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .about-hero__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

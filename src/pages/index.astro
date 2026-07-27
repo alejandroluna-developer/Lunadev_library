@@ -1,0 +1,67 @@
+---
+import LandingLayout from '../layouts/LandingLayout.astro';
+import HeroSection from '../components/organisms/HeroSection.astro';
+import CategoryCard from '../components/organisms/CategoryCard.astro';
+import FeaturedCard from '../components/organisms/FeaturedCard.astro';
+import Icon from '../components/atoms/Icon.astro';
+import { categories } from '../data/categories';
+import { getFeaturedPrompts } from '../data/prompts';
+
+const featuredPrompts = await getFeaturedPrompts();
+const featuredPrompt = featuredPrompts[0];
+---
+
+<LandingLayout>
+  <HeroSection />
+
+  <section class="categories-section">
+    <div class="categories-grid">
+      {categories.map((category) => (
+        <CategoryCard
+          category={category}
+          href={`/categories/${category.slug}`}
+        />
+      ))}
+    </div>
+  </section>
+
+  {featuredPrompt && (
+    <section class="featured-section">
+      <FeaturedCard prompt={featuredPrompt} />
+    </section>
+  )}
+</LandingLayout>
+
+<style>
+  .categories-section {
+    padding: var(--space-8) var(--space-6);
+    max-width: var(--page-max-width);
+    margin-inline: auto;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .featured-section {
+    padding: var(--space-8) var(--space-6);
+    max-width: var(--page-max-width);
+    margin-inline: auto;
+  }
+
+  @media (max-width: 768px) {
+    .categories-section {
+      padding: var(--space-4);
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .featured-section {
+      padding: var(--space-4);
+    }
+  }
+</style>

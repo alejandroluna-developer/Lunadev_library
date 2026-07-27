@@ -1,0 +1,199 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/organisms/Header.astro';
+import Icon from '../components/atoms/Icon.astro';
+import Button from '../components/atoms/Button.astro';
+import SearchBar from '../components/molecules/SearchBar.astro';
+---
+
+<Layout title="404 — Page Not Found — LunaPrompt">
+  <Header showSearch={false} />
+  <main class="error-page">
+    <div class="error-page__glow" aria-hidden="true"></div>
+    <div class="error-page__content">
+      <div class="error-page__code">
+        <span class="error-page__number">404</span>
+      </div>
+
+      <div class="error-page__message">
+        <h1 class="error-page__title">Signal Lost</h1>
+
+        <div class="error-page__trace">
+          <Icon name="terminal" size={14} />
+          <code>Error: [0xFD_NULL_POINTER] UNAVAILABLE_ENTITY</code>
+        </div>
+
+        <p class="error-page__description">
+          The prompt you're looking for has either been deprecated, moved to a different module,
+          or never existed in this version of the library.
+        </p>
+      </div>
+
+      <SearchBar
+        placeholder="Search prompts or documentation..."
+        size="md"
+        class="error-page__search"
+      />
+
+      <div class="error-page__actions">
+        <a href="/" class="error-page__back-link">
+          <Icon name="arrow-left" size={16} />
+          <span>Return to Library</span>
+        </a>
+        <Button variant="primary" href="/categories">
+          <Icon name="compass" size={16} />
+          <span>Explore Categories</span>
+        </Button>
+      </div>
+
+      <footer class="error-page__footer">
+        <span>LunaPrompt v4.2.0</span>
+        <span>·</span>
+        <span>Status: Active</span>
+        <span>·</span>
+        <span class="error-page__footer-indicator"></span>
+        <span>All systems operational</span>
+      </footer>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .error-page {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100dvh - var(--header-height));
+    padding: var(--space-8);
+    overflow: hidden;
+  }
+
+  .error-page__glow {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .error-page__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-6);
+    max-width: 500px;
+  }
+
+  .error-page__code {
+    margin-bottom: var(--space-4);
+  }
+
+  .error-page__number {
+    font-size: clamp(6rem, 15vw, 10rem);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    opacity: 0.08;
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .error-page__message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .error-page__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .error-page__trace {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-md);
+    color: var(--color-text-tertiary);
+  }
+
+  .error-page__trace code {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .error-page__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 400px;
+  }
+
+  .error-page__search {
+    width: 100%;
+  }
+
+  .error-page__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .error-page__back-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  .error-page__back-link:hover {
+    background: var(--color-bg-elevated);
+    color: var(--color-text-primary);
+  }
+
+  .error-page__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .error-page__footer-indicator {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background: var(--color-success);
+  }
+
+  @media (max-width: 768px) {
+    .error-page__actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .error-page__back-link {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

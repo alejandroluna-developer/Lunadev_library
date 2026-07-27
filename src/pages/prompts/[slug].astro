@@ -1,0 +1,542 @@
+---
+import { getCollection, render } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs.astro';
+import Badge from '../../components/atoms/Badge.astro';
+import Button from '../../components/atoms/Button.astro';
+import Icon from '../../components/atoms/Icon.astro';
+import { getCategoryBySlug, getSubcategoryBySlug } from '../../data/categories';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('prompts');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const prompt = entry.data;
+const rawContent = entry.body || '';
+
+const category = getCategoryBySlug(prompt.categorySlug);
+const subcategory = getSubcategoryBySlug(prompt.categorySlug, prompt.subcategorySlug);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: category?.name || 'Category', href: `/categories/${prompt.categorySlug}` },
+  { label: subcategory?.name || 'Subcategory', href: `/categories/${prompt.categorySlug}/${prompt.subcategorySlug}` },
+  { label: prompt.title },
+];
+
+const tips = [
+  { title: 'Specify Temperature', description: 'Keep temperature below 0.3 for deterministic code generation. Higher values introduce creative variance.' },
+  { title: 'Use System Prompts', description: 'Frame the AI as a specific role (Senior Engineer, Architect) to activate domain-specific reasoning patterns.' },
+  { title: 'Iterative Refinement', description: 'Chain multiple prompts in sequence. Use output of one as context for the next to build complexity.' },
+];
+---
+
+<MainLayout
+  title={`${prompt.title} — LunaPrompt`}
+  currentPath={`/categories/${prompt.categorySlug}`}
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <div class="prompt-detail">
+    <div class="prompt-detail__main">
+      <section class="prompt-detail__header">
+        <h1 class="prompt-detail__title">{prompt.title}</h1>
+        <div class="prompt-detail__badges">
+          <Badge variant="accent" size="md">{prompt.difficulty}</Badge>
+          <Badge variant="outline" size="md">{subcategory?.name}</Badge>
+        </div>
+      </section>
+
+      <section class="prompt-detail__overview">
+        <div class="prompt-detail__overview-card">
+          <h2 class="prompt-detail__section-title">Overview</h2>
+          <p class="prompt-detail__description">{prompt.description}</p>
+        </div>
+      </section>
+
+      <section class="prompt-detail__content">
+        <div class="prompt-detail__content-card">
+          <div class="prompt-detail__content-header">
+            <div class="prompt-detail__content-dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <span class="prompt-detail__content-filename">{entry.id}.md</span>
+            <button class="prompt-detail__copy-btn" id="copy-prompt-btn" aria-label="Copy prompt content">
+              <Icon name="copy" size={14} />
+              <span class="prompt-detail__copy-text">Copy</span>
+            </button>
+            <button class="prompt-detail__toggle-btn" id="toggle-view-btn" aria-label="Toggle raw/rendered view">
+              <Icon name="code" size={14} />
+              <span class="prompt-detail__toggle-text">Raw</span>
+            </button>
+          </div>
+          <div class="prompt-detail__content-body" id="prompt-content">
+            <Content />
+          </div>
+          <pre class="prompt-detail__content-raw" id="prompt-content-raw" hidden><code>{rawContent}</code></pre>
+        </div>
+      </section>
+    </div>
+
+    <aside class="prompt-detail__sidebar">
+      <div class="prompt-detail__preview">
+        <div class="prompt-detail__preview-visual">
+          <Icon name="terminal" size={48} />
+        </div>
+      </div>
+
+      <div class="prompt-detail__tips">
+        <h3 class="prompt-detail__tips-title">
+          <Icon name="zap" size={18} />
+          <span>Optimization Tips</span>
+        </h3>
+        <ul class="prompt-detail__tips-list">
+          {tips.map((tip, index) => (
+            <li class="prompt-detail__tip">
+              <div class="prompt-detail__tip-number">
+                <span>{index + 1}</span>
+              </div>
+              <div class="prompt-detail__tip-content">
+                <h4 class="prompt-detail__tip-title">{tip.title}</h4>
+                <p class="prompt-detail__tip-description">{tip.description}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="prompt-detail__meta-card">
+        {prompt.successRate && (
+          <div class="prompt-detail__meta-row">
+            <span class="prompt-detail__meta-label">Success Rate</span>
+            <span class="prompt-detail__meta-value">
+              <Icon name="check-circle" size={14} />
+              {prompt.successRate}%
+            </span>
+          </div>
+        )}
+        <Button variant="secondary" fullWidth href={`/categories/${prompt.categorySlug}/${prompt.subcategorySlug}`}>
+          <span>View Related Prompts</span>
+        </Button>
+      </div>
+    </aside>
+  </div>
+</MainLayout>
+
+<style>
+  .prompt-detail {
+    display: grid;
+    grid-template-columns: 1fr 288px;
+    gap: var(--space-8);
+    margin-top: var(--space-8);
+  }
+
+  .prompt-detail__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    min-width: 0;
+  }
+
+  .prompt-detail__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .prompt-detail__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .prompt-detail__badges {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .prompt-detail__overview-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .prompt-detail__section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .prompt-detail__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .prompt-detail__content-card {
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-code-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .prompt-detail__content-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-code-border);
+    background: var(--color-bg-secondary);
+  }
+
+  .prompt-detail__content-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: var(--space-4);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+  }
+
+  .dot--red { background: #ef4444; }
+  .dot--yellow { background: #f59e0b; }
+  .dot--green { background: #22c55e; }
+
+  .prompt-detail__content-filename {
+    flex: 1;
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+  }
+
+  .prompt-detail__copy-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .prompt-detail__copy-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .prompt-detail__copy-btn--copied {
+    color: var(--color-success);
+    border-color: var(--color-success);
+  }
+
+  .prompt-detail__toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    margin-left: var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .prompt-detail__toggle-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .prompt-detail__toggle-btn--active {
+    color: var(--color-accent-secondary);
+    border-color: var(--color-accent-primary);
+    background: var(--color-accent-subtle);
+  }
+
+  .prompt-detail__content-raw {
+    padding: var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    font-family: var(--font-mono);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .prompt-detail__content-body {
+    padding: var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .prompt-detail__content-body :global(h1),
+  .prompt-detail__content-body :global(h2),
+  .prompt-detail__content-body :global(h3) {
+    color: var(--color-text-primary);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+
+  .prompt-detail__content-body :global(code) {
+    padding: 2px 6px;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .prompt-detail__content-body :global(pre) {
+    padding: var(--space-4);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--space-4) 0;
+  }
+
+  .prompt-detail__content-body :global(pre code) {
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .prompt-detail__content-body :global(ul),
+  .prompt-detail__content-body :global(ol) {
+    padding-left: var(--space-5);
+    margin: var(--space-3) 0;
+  }
+
+  .prompt-detail__content-body :global(li) {
+    margin-bottom: var(--space-2);
+  }
+
+  .prompt-detail__content-body :global(p) {
+    margin-bottom: var(--space-3);
+  }
+
+  .prompt-detail__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .prompt-detail__preview {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-border-card);
+  }
+
+  .prompt-detail__preview-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 160px;
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(124, 58, 237, 0.08) 100%);
+    color: var(--color-accent-secondary);
+    opacity: 0.6;
+  }
+
+  .prompt-detail__tips {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+  }
+
+  .prompt-detail__tips-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .prompt-detail__tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .prompt-detail__tip {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  .prompt-detail__tip-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent-subtle);
+    color: var(--color-accent-secondary);
+    font-size: 10px;
+    font-weight: var(--weight-semibold);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .prompt-detail__tip-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .prompt-detail__tip-title {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  .prompt-detail__tip-description {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .prompt-detail__meta-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .prompt-detail__meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .prompt-detail__meta-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .prompt-detail__meta-value {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-success);
+  }
+
+  @media (max-width: 1024px) {
+    .prompt-detail {
+      grid-template-columns: 1fr;
+    }
+
+    .prompt-detail__sidebar {
+      order: -1;
+    }
+
+    .prompt-detail__preview {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .prompt-detail__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>
+
+<script>
+  const copyBtn = document.getElementById('copy-prompt-btn');
+  const toggleBtn = document.getElementById('toggle-view-btn');
+  const promptContent = document.getElementById('prompt-content');
+  const promptRaw = document.getElementById('prompt-content-raw');
+
+  // Copy functionality
+  if (copyBtn && promptContent && promptRaw) {
+    copyBtn.addEventListener('click', async () => {
+      const isRaw = promptRaw && !promptRaw.hidden;
+      const text = isRaw
+        ? (promptRaw.textContent || '')
+        : (promptContent.innerText || promptContent.textContent || '');
+
+      try {
+        await navigator.clipboard.writeText(text);
+
+        copyBtn.classList.add('prompt-detail__copy-btn--copied');
+        const textEl = copyBtn.querySelector('.prompt-detail__copy-text');
+        if (textEl) textEl.textContent = 'Copied!';
+
+        setTimeout(() => {
+          copyBtn.classList.remove('prompt-detail__copy-btn--copied');
+          if (textEl) textEl.textContent = 'Copy';
+        }, 2000);
+      } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+
+        const textEl = copyBtn.querySelector('.prompt-detail__copy-text');
+        if (textEl) textEl.textContent = 'Copied!';
+        setTimeout(() => {
+          if (textEl) textEl.textContent = 'Copy';
+        }, 2000);
+      }
+    });
+  }
+
+  // Toggle raw/rendered view
+  if (toggleBtn && promptContent && promptRaw) {
+    toggleBtn.addEventListener('click', () => {
+      const isCurrentlyRaw = !promptRaw.hidden;
+      const textEl = toggleBtn.querySelector('.prompt-detail__toggle-text');
+
+      if (isCurrentlyRaw) {
+        promptRaw.hidden = true;
+        promptContent.hidden = false;
+        toggleBtn.classList.remove('prompt-detail__toggle-btn--active');
+        if (textEl) textEl.textContent = 'Raw';
+      } else {
+        promptRaw.hidden = false;
+        promptContent.hidden = true;
+        toggleBtn.classList.add('prompt-detail__toggle-btn--active');
+        if (textEl) textEl.textContent = 'Rendered';
+      }
+    });
+  }
+</script>

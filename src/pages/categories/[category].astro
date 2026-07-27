@@ -1,0 +1,161 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs.astro';
+import CategoryCard from '../../components/organisms/CategoryCard.astro';
+import Icon from '../../components/atoms/Icon.astro';
+import Badge from '../../components/atoms/Badge.astro';
+import { categories, getCategoryBySlug, getCategoryPromptCount } from '../../data/categories';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({
+    params: { category: category.slug },
+  }));
+}
+
+const { category: categorySlug } = Astro.params;
+const category = getCategoryBySlug(categorySlug!);
+
+if (!category) {
+  return Astro.redirect('/404');
+}
+
+const promptCount = await getCategoryPromptCount(category.slug);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Categories', href: '/categories' },
+  { label: category.name },
+];
+---
+
+<MainLayout
+  title={`${category.name} — LunaPrompt`}
+  currentPath={`/categories/${category.slug}`}
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section class="hero-section">
+    <div class="hero-section__content">
+      <h1 class="hero-section__title">{category.name}</h1>
+      <p class="hero-section__description">{category.description}</p>
+      <div class="hero-section__meta">
+        <Badge variant="accent" size="md">
+          <Icon name="layers" size={12} />
+          <span>{promptCount} prompts available</span>
+        </Badge>
+        <span class="hero-section__subcategories">
+          {category.subcategories?.length || 0} subcategories
+        </span>
+      </div>
+    </div>
+    <div class="hero-section__stats">
+      <span class="hero-section__stat-number">{promptCount}</span>
+      <span class="hero-section__stat-label">Total Prompts</span>
+    </div>
+  </section>
+
+  {category.subcategories && category.subcategories.length > 0 && (
+    <section class="subcategories-section">
+      <div class="subcategories-grid">
+        {category.subcategories.map((sub) => (
+          <CategoryCard
+            category={sub}
+            href={`/categories/${category.slug}/${sub.slug}`}
+            variant="compact"
+          />
+        ))}
+      </div>
+    </section>
+  )}
+</MainLayout>
+
+<style>
+  .hero-section {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-xl);
+    margin: var(--space-8) 0;
+  }
+
+  .hero-section__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .hero-section__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .hero-section__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 600px;
+  }
+
+  .hero-section__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .hero-section__subcategories {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .hero-section__stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-1);
+  }
+
+  .hero-section__stat-number {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-accent-secondary);
+  }
+
+  .hero-section__stat-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .subcategories-section {
+    margin-top: var(--space-6);
+  }
+
+  .subcategories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-4);
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      flex-direction: column;
+      padding: var(--space-6);
+    }
+
+    .hero-section__title {
+      font-size: var(--text-2xl);
+    }
+
+    .hero-section__stats {
+      align-items: flex-start;
+    }
+
+    .subcategories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
