@@ -1,0 +1,127 @@
+:root {
+  /* ─── Color Palette ─── */
+  --color-bg-primary: #09090b;
+  --color-bg-secondary: #0f0f14;
+  --color-bg-tertiary: #16161d;
+  --color-bg-elevated: #1c1c26;
+  --color-bg-card: #13131a;
+  --color-bg-card-hover: #1a1a24;
+  --color-bg-input: #111118;
+  --color-bg-overlay: rgba(9, 9, 11, 0.85);
+
+  --color-border-default: #1e1e2a;
+  --color-border-subtle: #161620;
+  --color-border-active: #7c3aed;
+  --color-border-card: #1a1a26;
+
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary: #71717a;
+  --color-text-muted: #52525b;
+  --color-text-inverse: #09090b;
+
+  --color-accent-primary: #7c3aed;
+  --color-accent-secondary: #a78bfa;
+  --color-accent-gradient: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  --color-accent-subtle: rgba(124, 58, 237, 0.12);
+
+  --color-success: #22c55e;
+  --color-success-subtle: rgba(34, 197, 94, 0.12);
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  --color-tag-bg: rgba(124, 58, 237, 0.1);
+  --color-tag-text: #a78bfa;
+  --color-tag-border: rgba(124, 58, 237, 0.2);
+
+  --color-code-bg: #0c0c12;
+  --color-code-border: #1e1e2a;
+  --color-code-keyword: #c084fc;
+  --color-code-string: #34d399;
+  --color-code-comment: #6b7280;
+  --color-code-function: #60a5fa;
+  --color-code-variable: #f9fafb;
+
+  /* ─── Glow Effects ─── */
+  --glow-purple: 0 0 60px rgba(124, 58, 237, 0.15);
+  --glow-purple-strong: 0 0 120px rgba(124, 58, 237, 0.25);
+
+  /* ─── Typography ─── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 3rem;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+
+  /* ─── Spacing ─── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ─── Layout ─── */
+  --sidebar-width: 256px;
+  --sidebar-width-v2: 280px;
+  --header-height: 64px;
+  --bottom-nav-height: 64px;
+  --content-max-width: 1024px;
+  --page-max-width: 1280px;
+
+  /* ─── Border Radius ─── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 0 0 1px var(--color-border-card), 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  /* ─── Transitions ─── */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ─── Z-Index ─── */
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-modal: 40;
+  --z-toast: 50;
+
+  /* ─── Breakpoints (reference) ─── */
+  /* sm: 640px, md: 768px, lg: 1024px, xl: 1280px */
+}
