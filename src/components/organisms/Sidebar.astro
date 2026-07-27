@@ -1,0 +1,76 @@
+---
+import NavLink from '../molecules/NavLink.astro';
+import { sidebarNavItems } from '../../data/navigation';
+
+interface Props {
+  currentPath?: string;
+  class?: string;
+}
+
+const { currentPath = '/', class: className = '' } = Astro.props;
+---
+
+<aside class:list={['sidebar', className]}>
+  <div class="sidebar__header">
+    <h2 class="sidebar__title">Prompt Categories</h2>
+    <p class="sidebar__subtitle">Enterprise Library</p>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Sidebar navigation">
+    {sidebarNavItems.map((item) => (
+      <NavLink
+        href={item.href}
+        icon={item.icon}
+        label={item.label}
+        isActive={currentPath === item.href || currentPath.startsWith(item.href + '/')}
+      />
+    ))}
+  </nav>
+</aside>
+
+<style>
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-width);
+    height: calc(100dvh - var(--header-height));
+    position: sticky;
+    top: var(--header-height);
+    padding: var(--space-4) var(--space-3);
+    border-right: 1px solid var(--color-border-subtle);
+    overflow-y: auto;
+  }
+
+  .sidebar__header {
+    padding: var(--space-4) var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .sidebar__title {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+  }
+
+  .sidebar__subtitle {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    margin-top: var(--space-1);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    flex: 1;
+  }
+
+  @media (max-width: 1024px) {
+    .sidebar {
+      display: none;
+    }
+  }
+</style>

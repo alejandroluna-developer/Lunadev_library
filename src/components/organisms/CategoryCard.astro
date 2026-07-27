@@ -1,0 +1,129 @@
+---
+import Icon from '../atoms/Icon.astro';
+import type { Category, Subcategory } from '../../types';
+import { getCategoryPromptCount, getSubcategoryPromptCount } from '../../data/categories';
+
+interface Props {
+  category: Category | Subcategory;
+  href: string;
+  variant?: 'default' | 'compact' | 'featured';
+  class?: string;
+}
+
+const { category, href, variant = 'default', class: className = '' } = Astro.props;
+
+const promptCount = 'parentCategorySlug' in category
+  ? await getSubcategoryPromptCount(category.slug)
+  : await getCategoryPromptCount(category.slug);
+---
+
+<a class:list={['category-card', `category-card--${variant}`, className]} href={href}>
+  <div class="category-card__accent"></div>
+  <div class="category-card__content">
+    <div class="category-card__icon-wrap">
+      <Icon name={category.icon} size={variant === 'compact' ? 18 : 20} />
+    </div>
+
+    <div class="category-card__body">
+      <h3 class="category-card__title">{category.name}</h3>
+      <p class="category-card__description">{category.description}</p>
+    </div>
+
+    <div class="category-card__footer">
+      <span class="category-card__count">{promptCount} prompts</span>
+      <Icon name="arrow-right" size={14} class="category-card__arrow" />
+    </div>
+  </div>
+</a>
+
+<style>
+  .category-card {
+    position: relative;
+    display: flex;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+  }
+
+  .category-card:hover {
+    background: var(--color-bg-card-hover);
+    border-color: var(--color-border-default);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .category-card__accent {
+    width: 4px;
+    background: var(--color-accent-primary);
+    border-radius: var(--radius-full);
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+  }
+
+  .category-card:hover .category-card__accent {
+    opacity: 1;
+  }
+
+  .category-card__content {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+    flex: 1;
+    gap: var(--space-4);
+  }
+
+  .category-card__icon-wrap {
+    color: var(--color-accent-secondary);
+  }
+
+  .category-card__title {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .category-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .category-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .category-card__count {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .category-card__arrow {
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
+  }
+
+  .category-card:hover .category-card__arrow {
+    color: var(--color-accent-secondary);
+    transform: translateX(2px);
+  }
+
+  /* Compact variant */
+  .category-card--compact .category-card__content {
+    padding: var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .category-card--compact .category-card__title {
+    font-size: var(--text-base);
+  }
+
+  .category-card--compact .category-card__description {
+    font-size: var(--text-xs);
+  }
+</style>

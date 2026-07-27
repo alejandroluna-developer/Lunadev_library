@@ -1,0 +1,102 @@
+---
+import Icon from '../atoms/Icon.astro';
+import Button from '../atoms/Button.astro';
+import type { Prompt } from '../../types';
+
+interface Props {
+  prompt: Prompt;
+  class?: string;
+}
+
+const { prompt, class: className = '' } = Astro.props;
+---
+
+<section class:list={['featured-card', className]}>
+  <div class="featured-card__content">
+    <span class="featured-card__label">FEATURED SYSTEM</span>
+    <h3 class="featured-card__title">{prompt.title}</h3>
+    <p class="featured-card__description">{prompt.description}</p>
+    <Button variant="primary" size="lg" href={`/prompts/${prompt.slug}`}>
+      <span>Explore Prompt</span>
+      <Icon name="arrow-right" size={18} />
+    </Button>
+  </div>
+  <div class="featured-card__visual">
+    <div class="featured-card__icon-large">
+      <Icon name="layers" size={64} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .featured-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-8);
+    padding: var(--space-10);
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(124, 58, 237, 0.05) 100%);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .featured-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    justify-content: center;
+  }
+
+  .featured-card__label {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--color-accent-secondary);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .featured-card__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .featured-card__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 500px;
+  }
+
+  .featured-card__visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 280px;
+    height: 280px;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-xl);
+  }
+
+  .featured-card__icon-large {
+    color: var(--color-accent-secondary);
+    opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .featured-card {
+      grid-template-columns: 1fr;
+      padding: var(--space-6);
+    }
+
+    .featured-card__visual {
+      display: none;
+    }
+
+    .featured-card__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

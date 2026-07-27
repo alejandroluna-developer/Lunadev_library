@@ -1,0 +1,145 @@
+---
+import Icon from '../atoms/Icon.astro';
+import Badge from '../atoms/Badge.astro';
+import type { Prompt } from '../../types';
+
+interface Props {
+  prompt: Prompt;
+  variant?: 'default' | 'compact' | 'featured';
+  class?: string;
+}
+
+const { prompt, variant = 'default', class: className = '' } = Astro.props;
+
+const difficultyColors = {
+  beginner: 'success',
+  intermediate: 'accent',
+  advanced: 'default',
+} as const;
+
+const href = `/prompts/${prompt.slug}`;
+---
+
+<a class:list={['prompt-card', `prompt-card--${variant}`, className]} href={href}>
+  <div class="prompt-card__header">
+    <div class="prompt-card__icon-wrap">
+      <Icon name="terminal" size={12} />
+    </div>
+    <Badge variant={difficultyColors[prompt.difficulty]} size="sm">
+      {prompt.difficulty}
+    </Badge>
+  </div>
+
+  <h3 class="prompt-card__title">{prompt.title}</h3>
+
+  <p class="prompt-card__description">{prompt.description}</p>
+
+  <div class="prompt-card__footer">
+    <span class="prompt-card__meta">
+      Updated {prompt.updatedAt}
+    </span>
+    <span class="prompt-card__action">
+      <span>View</span>
+      <Icon name="arrow-right" size={12} />
+    </span>
+  </div>
+</a>
+
+<style>
+  .prompt-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-normal);
+    gap: var(--space-3);
+  }
+
+  .prompt-card:hover {
+    background: var(--color-bg-card-hover);
+    border-color: var(--color-border-default);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .prompt-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .prompt-card__icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--color-accent-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--color-accent-secondary);
+  }
+
+  .prompt-card__title {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+  }
+
+  .prompt-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .prompt-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: var(--space-3);
+  }
+
+  .prompt-card__meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .prompt-card__action {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-accent-secondary);
+    font-weight: var(--weight-medium);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .prompt-card:hover .prompt-card__action {
+    opacity: 1;
+  }
+
+  /* Featured variant */
+  .prompt-card--featured {
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(124, 58, 237, 0.05) 100%);
+    border-color: var(--color-border-active);
+  }
+
+  /* Compact variant */
+  .prompt-card--compact {
+    padding: var(--space-4);
+    gap: var(--space-2);
+  }
+
+  .prompt-card--compact .prompt-card__title {
+    font-size: var(--text-base);
+  }
+</style>
