@@ -47,20 +47,25 @@ const {
   .ba-slider__container {
     position: relative;
     width: 100%;
+    max-width: 640px;
+    height: 480px;
+    margin-inline: auto;
     overflow: hidden;
     cursor: ew-resize;
     background: var(--color-bg-primary);
   }
 
   .ba-slider__image--after {
-    position: relative;
-    width: 100%;
+    position: absolute;
+    inset: 0;
     z-index: 1;
   }
 
   .ba-slider__image--after img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
     display: block;
     pointer-events: none;
   }
