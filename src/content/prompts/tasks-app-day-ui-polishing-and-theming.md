@@ -13,7 +13,7 @@ project:
   name: "Tasks App"
   description: "Aplicación de gestión de tareas construida paso a paso en TikTok con arquitectura empresarial."
   order: 3
-  totalParts: 8
+  totalParts: 9
 ---
 
 ## UI Polishing & Theme Implementation
