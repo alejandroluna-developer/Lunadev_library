@@ -13,7 +13,7 @@ project:
   name: "Tasks App"
   description: "Aplicación de gestión de tareas construida paso a paso en TikTok con arquitectura empresarial."
   order: 5
-  totalParts: 6
+  totalParts: 7
 ---
 
 ## RBAC Authorization Module — Enterprise Implementation
