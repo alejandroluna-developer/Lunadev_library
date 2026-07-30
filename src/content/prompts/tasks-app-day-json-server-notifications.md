@@ -13,7 +13,7 @@ project:
   name: "Tasks App"
   description: "Aplicación de gestión de tareas construida paso a paso en TikTok con arquitectura empresarial."
   order: 10
-  totalParts: 11
+  totalParts: 12
 ---
 
 ## JSON Server + Enterprise Notification Platform
