@@ -13,7 +13,7 @@ project:
   name: "Tasks App"
   description: "Aplicación de gestión de tareas construida paso a paso en TikTok con arquitectura empresarial."
   order: 12
-  totalParts: 12
+  totalParts: 16
 ---
 
 ## Smart Dashboard SaaS Analytics — Full Responsive Edition
