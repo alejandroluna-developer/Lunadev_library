@@ -13,7 +13,7 @@ project:
   name: "Tasks App"
   description: "Aplicación de gestión de tareas construida paso a paso en TikTok con arquitectura empresarial."
   order: 15
-  totalParts: 16
+  totalParts: 17
 ---
 
 ## TaskFlow Evolution — Part 3: UI/UX + Dashboard + Settings + Responsive + QA
