@@ -1,5 +1,7 @@
 import type { Category, Subcategory } from '../types';
 import { getAllPrompts } from './prompts';
+import { getAllSkills } from './skills';
+import { getAllWorkflows } from './workflows';
 
 export const categories: Category[] = [
   {
@@ -182,6 +184,50 @@ export async function getSubcategoryPromptCount(subcategorySlug: string): Promis
 export async function getCategoryPromptCount(categorySlug: string): Promise<number> {
   const prompts = await getAllPrompts();
   return prompts.filter((p) => p.categorySlug === categorySlug).length;
+}
+
+/* ─── Conteos dinámicos para skills ─── */
+
+export async function getSubcategorySkillCount(subcategorySlug: string): Promise<number> {
+  const skills = await getAllSkills();
+  return skills.filter((s) => s.subcategorySlug === subcategorySlug).length;
+}
+
+export async function getCategorySkillCount(categorySlug: string): Promise<number> {
+  const skills = await getAllSkills();
+  return skills.filter((s) => s.categorySlug === categorySlug).length;
+}
+
+/* ─── Conteos dinámicos para workflows ─── */
+
+export async function getSubcategoryWorkflowCount(subcategorySlug: string): Promise<number> {
+  const workflows = await getAllWorkflows();
+  return workflows.filter((w) => w.subcategorySlug === subcategorySlug).length;
+}
+
+export async function getCategoryWorkflowCount(categorySlug: string): Promise<number> {
+  const workflows = await getAllWorkflows();
+  return workflows.filter((w) => w.categorySlug === categorySlug).length;
+}
+
+/* ─── Conteos totales por subcategoría (prompts + skills + workflows) ─── */
+
+export async function getSubcategoryTotalCount(subcategorySlug: string): Promise<number> {
+  const [prompts, skills, workflows] = await Promise.all([
+    getSubcategoryPromptCount(subcategorySlug),
+    getSubcategorySkillCount(subcategorySlug),
+    getSubcategoryWorkflowCount(subcategorySlug),
+  ]);
+  return prompts + skills + workflows;
+}
+
+export async function getCategoryTotalCount(categorySlug: string): Promise<number> {
+  const [prompts, skills, workflows] = await Promise.all([
+    getCategoryPromptCount(categorySlug),
+    getCategorySkillCount(categorySlug),
+    getCategoryWorkflowCount(categorySlug),
+  ]);
+  return prompts + skills + workflows;
 }
 
 /* ─── Lookup helpers ─── */

@@ -1,0 +1,459 @@
+---
+import { getCollection, render } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+import Breadcrumbs from '../../components/molecules/Breadcrumbs.astro';
+import Badge from '../../components/atoms/Badge.astro';
+import Button from '../../components/atoms/Button.astro';
+import Icon from '../../components/atoms/Icon.astro';
+import { getCategoryBySlug, getSubcategoryBySlug } from '../../data/categories';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('skills');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const skill = entry.data;
+const rawContent = entry.body || '';
+
+const category = getCategoryBySlug(skill.categorySlug);
+const subcategory = getSubcategoryBySlug(skill.categorySlug, skill.subcategorySlug);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Skills', href: '/skills' },
+  { label: category?.name || 'Category', href: `/categories/${skill.categorySlug}` },
+  { label: skill.title },
+];
+---
+
+<MainLayout
+  title={`${skill.title} — LunaPrompt`}
+  currentPath="/skills"
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <div class="skill-detail">
+    <div class="skill-detail__main">
+      <section class="skill-detail__header">
+        <h1 class="skill-detail__title">{skill.title}</h1>
+        <div class="skill-detail__badges">
+          <Badge variant="accent" size="md">{skill.difficulty}</Badge>
+          <Badge variant="outline" size="md">{subcategory?.name}</Badge>
+          {skill.targetAgent && (
+            <Badge variant="outline" size="md">{skill.targetAgent}</Badge>
+          )}
+        </div>
+      </section>
+
+      <section class="skill-detail__overview">
+        <div class="skill-detail__overview-card">
+          <h2 class="skill-detail__section-title">Overview</h2>
+          <p class="skill-detail__description">{skill.description}</p>
+        </div>
+      </section>
+
+      <section class="skill-detail__content">
+        <div class="skill-detail__content-card">
+          <div class="skill-detail__content-header">
+            <div class="skill-detail__content-dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--yellow"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <span class="skill-detail__content-filename">{entry.id}.md</span>
+            <button class="skill-detail__copy-btn" id="copy-skill-btn" aria-label="Copy skill content">
+              <Icon name="copy" size={14} />
+              <span class="skill-detail__copy-text">Copy</span>
+            </button>
+            <button class="skill-detail__toggle-btn" id="toggle-view-btn" aria-label="Toggle raw/rendered view">
+              <Icon name="code" size={14} />
+              <span class="skill-detail__toggle-text">Raw</span>
+            </button>
+          </div>
+          <div class="skill-detail__content-body" id="skill-content">
+            <Content />
+          </div>
+          <pre class="skill-detail__content-raw" id="skill-content-raw" hidden><code>{rawContent}</code></pre>
+        </div>
+      </section>
+    </div>
+
+    <aside class="skill-detail__sidebar">
+      <div class="skill-detail__preview">
+        <div class="skill-detail__preview-visual">
+          <Icon name="cpu" size={48} />
+        </div>
+      </div>
+
+      <div class="skill-detail__meta-card">
+        <h3 class="skill-detail__meta-title">Detalles</h3>
+        <div class="skill-detail__meta-row">
+          <span class="skill-detail__meta-label">Dificultad</span>
+          <Badge variant="accent" size="sm">{skill.difficulty}</Badge>
+        </div>
+        {skill.targetAgent && (
+          <div class="skill-detail__meta-row">
+            <span class="skill-detail__meta-label">Agente</span>
+            <span class="skill-detail__meta-value">{skill.targetAgent}</span>
+          </div>
+        )}
+        <div class="skill-detail__meta-row">
+          <span class="skill-detail__meta-label">Categoría</span>
+          <span class="skill-detail__meta-value">{category?.name}</span>
+        </div>
+        <div class="skill-detail__meta-row">
+          <span class="skill-detail__meta-label">Creado</span>
+          <span class="skill-detail__meta-value">{skill.createdAt}</span>
+        </div>
+        <div class="skill-detail__meta-tags">
+          {skill.tags.map((tag) => (
+            <Badge variant="outline" size="sm">{tag}</Badge>
+          ))}
+        </div>
+        <Button variant="secondary" fullWidth href="/skills">
+          <span>Ver todas las Skills</span>
+        </Button>
+      </div>
+    </aside>
+  </div>
+</MainLayout>
+
+<style>
+  .skill-detail {
+    display: grid;
+    grid-template-columns: 1fr 288px;
+    gap: var(--space-8);
+    margin-top: var(--space-8);
+  }
+
+  .skill-detail__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    min-width: 0;
+  }
+
+  .skill-detail__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .skill-detail__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .skill-detail__badges {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .skill-detail__overview-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .skill-detail__section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .skill-detail__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .skill-detail__content-card {
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-code-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .skill-detail__content-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-code-border);
+    background: var(--color-bg-secondary);
+  }
+
+  .skill-detail__content-dots {
+    display: flex;
+    gap: 6px;
+    margin-right: var(--space-4);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+  }
+
+  .dot--red { background: #ef4444; }
+  .dot--yellow { background: #f59e0b; }
+  .dot--green { background: #22c55e; }
+
+  .skill-detail__content-filename {
+    flex: 1;
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+    font-family: var(--font-mono);
+  }
+
+  .skill-detail__copy-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .skill-detail__copy-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .skill-detail__toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    margin-left: var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-xs);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .skill-detail__toggle-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-primary);
+  }
+
+  .skill-detail__content-raw {
+    padding: var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    font-family: var(--font-mono);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .skill-detail__content-body {
+    padding: var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .skill-detail__content-body :global(h1),
+  .skill-detail__content-body :global(h2),
+  .skill-detail__content-body :global(h3) {
+    color: var(--color-text-primary);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-2);
+  }
+
+  .skill-detail__content-body :global(code) {
+    padding: 2px 6px;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .skill-detail__content-body :global(pre) {
+    padding: var(--space-4);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--space-4) 0;
+  }
+
+  .skill-detail__content-body :global(pre code) {
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .skill-detail__content-body :global(ul),
+  .skill-detail__content-body :global(ol) {
+    padding-left: var(--space-5);
+    margin: var(--space-3) 0;
+  }
+
+  .skill-detail__content-body :global(li) {
+    margin-bottom: var(--space-2);
+  }
+
+  .skill-detail__content-body :global(p) {
+    margin-bottom: var(--space-3);
+  }
+
+  .skill-detail__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .skill-detail__preview {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-border-card);
+  }
+
+  .skill-detail__preview-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 160px;
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(124, 58, 237, 0.08) 100%);
+    color: var(--color-accent-secondary);
+    opacity: 0.6;
+  }
+
+  .skill-detail__meta-card {
+    padding: var(--space-6);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .skill-detail__meta-title {
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .skill-detail__meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .skill-detail__meta-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .skill-detail__meta-value {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  .skill-detail__meta-tags {
+    display: flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  @media (max-width: 1024px) {
+    .skill-detail {
+      grid-template-columns: 1fr;
+    }
+
+    .skill-detail__sidebar {
+      order: -1;
+    }
+
+    .skill-detail__preview {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .skill-detail__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>
+
+<script>
+  const copyBtn = document.getElementById('copy-skill-btn');
+  const toggleBtn = document.getElementById('toggle-view-btn');
+  const skillContent = document.getElementById('skill-content');
+  const skillRaw = document.getElementById('skill-content-raw');
+
+  if (copyBtn && skillContent && skillRaw) {
+    copyBtn.addEventListener('click', async () => {
+      const isRaw = skillRaw && !skillRaw.hidden;
+      const text = isRaw
+        ? (skillRaw.textContent || '')
+        : (skillContent.innerText || skillContent.textContent || '');
+
+      try {
+        await navigator.clipboard.writeText(text);
+        const textEl = copyBtn.querySelector('.skill-detail__copy-text');
+        if (textEl) textEl.textContent = 'Copied!';
+        setTimeout(() => { if (textEl) textEl.textContent = 'Copy'; }, 2000);
+      } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        const textEl = copyBtn.querySelector('.skill-detail__copy-text');
+        if (textEl) textEl.textContent = 'Copied!';
+        setTimeout(() => { if (textEl) textEl.textContent = 'Copy'; }, 2000);
+      }
+    });
+  }
+
+  if (toggleBtn && skillContent && skillRaw) {
+    toggleBtn.addEventListener('click', () => {
+      const isCurrentlyRaw = !skillRaw.hidden;
+      const textEl = toggleBtn.querySelector('.skill-detail__toggle-text');
+      if (isCurrentlyRaw) {
+        skillRaw.hidden = true;
+        skillContent.hidden = false;
+        if (textEl) textEl.textContent = 'Raw';
+      } else {
+        skillRaw.hidden = false;
+        skillContent.hidden = true;
+        if (textEl) textEl.textContent = 'Rendered';
+      }
+    });
+  }
+</script>

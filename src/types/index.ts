@@ -66,3 +66,39 @@ export interface OptimizationTip {
   title: string;
   description: string;
 }
+
+export type TargetAgent = 'cursor' | 'kiro' | 'claude-code' | 'gemini-cli' | 'copilot' | 'universal';
+
+export interface Skill {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  categorySlug: string;
+  subcategorySlug: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  targetAgent?: TargetAgent;
+  createdAt: string;
+  updatedAt: string;
+  isFeatured?: boolean;
+  author?: Author;
+}
+
+export interface Workflow {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  categorySlug: string;
+  subcategorySlug: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  steps: number;
+  estimatedTime?: string;
+  targetAgent?: TargetAgent;
+  createdAt: string;
+  updatedAt: string;
+  isFeatured?: boolean;
+  author?: Author;
+}

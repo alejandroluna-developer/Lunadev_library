@@ -1,0 +1,286 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Badge from '../../components/atoms/Badge.astro';
+import Icon from '../../components/atoms/Icon.astro';
+import { getAllWorkflows } from '../../data/workflows';
+
+const workflows = await getAllWorkflows();
+const featuredWorkflows = workflows.filter((w) => w.isFeatured);
+const regularWorkflows = workflows.filter((w) => !w.isFeatured);
+---
+
+<MainLayout title="Workflows — LunaPrompt" currentPath="/workflows">
+  <div class="workflows-page">
+    <header class="workflows-page__header">
+      <div class="workflows-page__title-row">
+        <Icon name="git-branch" size={28} />
+        <h1 class="workflows-page__title">Workflows</h1>
+      </div>
+      <p class="workflows-page__description">
+        Secuencias de pasos y prompts orquestados para lograr un objetivo completo. Cada workflow guía al agente paso a paso.
+      </p>
+      <div class="workflows-page__stats">
+        <span class="workflows-page__stat">
+          <Icon name="layers" size={14} />
+          {workflows.length} workflows disponibles
+        </span>
+      </div>
+    </header>
+
+    {featuredWorkflows.length > 0 && (
+      <section class="workflows-page__featured">
+        <h2 class="workflows-page__section-title">Destacados</h2>
+        <div class="workflows-page__grid">
+          {featuredWorkflows.map((workflow) => (
+            <a href={`/workflows/${workflow.slug}`} class="workflow-card workflow-card--featured">
+              <div class="workflow-card__header">
+                <Icon name="git-branch" size={20} />
+                <Badge variant="accent" size="sm">{workflow.difficulty}</Badge>
+              </div>
+              <h3 class="workflow-card__title">{workflow.title}</h3>
+              <p class="workflow-card__description">{workflow.description}</p>
+              <div class="workflow-card__meta">
+                <span class="workflow-card__steps">
+                  <Icon name="layers" size={12} />
+                  {workflow.steps} pasos
+                </span>
+                {workflow.estimatedTime && (
+                  <span class="workflow-card__time">
+                    <Icon name="clock" size={12} />
+                    {workflow.estimatedTime}
+                  </span>
+                )}
+              </div>
+              <div class="workflow-card__footer">
+                <div class="workflow-card__tags">
+                  {workflow.tags.slice(0, 3).map((tag) => (
+                    <Badge variant="outline" size="sm">{tag}</Badge>
+                  ))}
+                </div>
+                {workflow.targetAgent && (
+                  <span class="workflow-card__agent">
+                    <Icon name="terminal" size={12} />
+                    {workflow.targetAgent}
+                  </span>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="workflows-page__all">
+      <h2 class="workflows-page__section-title">Todos los Workflows</h2>
+      <div class="workflows-page__grid">
+        {regularWorkflows.map((workflow) => (
+          <a href={`/workflows/${workflow.slug}`} class="workflow-card">
+            <div class="workflow-card__header">
+              <Icon name="git-branch" size={20} />
+              <Badge variant="accent" size="sm">{workflow.difficulty}</Badge>
+            </div>
+            <h3 class="workflow-card__title">{workflow.title}</h3>
+            <p class="workflow-card__description">{workflow.description}</p>
+            <div class="workflow-card__meta">
+              <span class="workflow-card__steps">
+                <Icon name="layers" size={12} />
+                {workflow.steps} pasos
+              </span>
+              {workflow.estimatedTime && (
+                <span class="workflow-card__time">
+                  <Icon name="clock" size={12} />
+                  {workflow.estimatedTime}
+                </span>
+              )}
+            </div>
+            <div class="workflow-card__footer">
+              <div class="workflow-card__tags">
+                {workflow.tags.slice(0, 3).map((tag) => (
+                  <Badge variant="outline" size="sm">{tag}</Badge>
+                ))}
+              </div>
+              {workflow.targetAgent && (
+                <span class="workflow-card__agent">
+                  <Icon name="terminal" size={12} />
+                  {workflow.targetAgent}
+                </span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {workflows.length === 0 && (
+      <div class="workflows-page__empty">
+        <Icon name="git-branch" size={48} />
+        <p>No hay workflows disponibles todavía.</p>
+      </div>
+    )}
+  </div>
+</MainLayout>
+
+<style>
+  .workflows-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding-top: var(--space-6);
+  }
+
+  .workflows-page__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .workflows-page__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-primary);
+  }
+
+  .workflows-page__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .workflows-page__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 640px;
+  }
+
+  .workflows-page__stats {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .workflows-page__stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .workflows-page__section-title {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .workflows-page__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .workflow-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .workflow-card:hover {
+    border-color: var(--color-accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .workflow-card--featured {
+    border-color: var(--color-accent-primary);
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(124, 58, 237, 0.04) 100%);
+  }
+
+  .workflow-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-accent-secondary);
+  }
+
+  .workflow-card__title {
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+  }
+
+  .workflow-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .workflow-card__meta {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .workflow-card__steps,
+  .workflow-card__time {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .workflow-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  .workflow-card__tags {
+    display: flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .workflow-card__agent {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .workflows-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-16) 0;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .workflows-page__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .workflows-page__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

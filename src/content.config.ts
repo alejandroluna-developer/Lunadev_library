@@ -41,6 +41,52 @@ const promptsCollection = defineCollection({
   }),
 });
 
+const skillsCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/skills' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    categorySlug: z.string(),
+    subcategorySlug: z.string(),
+    tags: z.array(z.string()),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+    targetAgent: z.enum(['cursor', 'kiro', 'claude-code', 'gemini-cli', 'copilot', 'universal']).optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    isFeatured: z.boolean().default(false),
+    author: z.object({
+      name: z.string(),
+      avatar: z.string().optional(),
+      role: z.string().optional(),
+    }).optional(),
+  }),
+});
+
+const workflowsCollection = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/workflows' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    categorySlug: z.string(),
+    subcategorySlug: z.string(),
+    tags: z.array(z.string()),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+    steps: z.number(),
+    estimatedTime: z.string().optional(),
+    targetAgent: z.enum(['cursor', 'kiro', 'claude-code', 'gemini-cli', 'copilot', 'universal']).optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    isFeatured: z.boolean().default(false),
+    author: z.object({
+      name: z.string(),
+      avatar: z.string().optional(),
+      role: z.string().optional(),
+    }).optional(),
+  }),
+});
+
 export const collections = {
   prompts: promptsCollection,
+  skills: skillsCollection,
+  workflows: workflowsCollection,
 };

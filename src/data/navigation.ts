@@ -11,6 +11,8 @@ export const sidebarNavItems: NavItem[] = [
   { label: 'Imágenes', href: '/categories/creacion-de-imagenes-y-diseno', icon: 'image' },
   { label: 'Video', href: '/categories/creacion-de-video-y-contenido', icon: 'video' },
   { label: 'Guías', href: '/categories/guias-y-consejos-de-prompts', icon: 'book' },
+  { label: 'Skills', href: '/skills', icon: 'cpu' },
+  { label: 'Workflows', href: '/workflows', icon: 'git-branch' },
 ];
 
 export const footerNavItems: NavItem[] = [

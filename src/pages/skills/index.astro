@@ -1,0 +1,248 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Badge from '../../components/atoms/Badge.astro';
+import Icon from '../../components/atoms/Icon.astro';
+import { getAllSkills } from '../../data/skills';
+
+const skills = await getAllSkills();
+const featuredSkills = skills.filter((s) => s.isFeatured);
+const regularSkills = skills.filter((s) => !s.isFeatured);
+---
+
+<MainLayout title="Skills — LunaPrompt" currentPath="/skills">
+  <div class="skills-page">
+    <header class="skills-page__header">
+      <div class="skills-page__title-row">
+        <Icon name="cpu" size={28} />
+        <h1 class="skills-page__title">Skills</h1>
+      </div>
+      <p class="skills-page__description">
+        Conocimientos e instrucciones empaquetadas para agentes AI. Cada skill enseña a un agente a realizar una tarea específica de forma experta.
+      </p>
+      <div class="skills-page__stats">
+        <span class="skills-page__stat">
+          <Icon name="layers" size={14} />
+          {skills.length} skills disponibles
+        </span>
+      </div>
+    </header>
+
+    {featuredSkills.length > 0 && (
+      <section class="skills-page__featured">
+        <h2 class="skills-page__section-title">Destacadas</h2>
+        <div class="skills-page__grid">
+          {featuredSkills.map((skill) => (
+            <a href={`/skills/${skill.slug}`} class="skill-card skill-card--featured">
+              <div class="skill-card__header">
+                <Icon name="cpu" size={20} />
+                <Badge variant="accent" size="sm">{skill.difficulty}</Badge>
+              </div>
+              <h3 class="skill-card__title">{skill.title}</h3>
+              <p class="skill-card__description">{skill.description}</p>
+              <div class="skill-card__footer">
+                <div class="skill-card__tags">
+                  {skill.tags.slice(0, 3).map((tag) => (
+                    <Badge variant="outline" size="sm">{tag}</Badge>
+                  ))}
+                </div>
+                {skill.targetAgent && (
+                  <span class="skill-card__agent">
+                    <Icon name="terminal" size={12} />
+                    {skill.targetAgent}
+                  </span>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="skills-page__all">
+      <h2 class="skills-page__section-title">Todas las Skills</h2>
+      <div class="skills-page__grid">
+        {regularSkills.map((skill) => (
+          <a href={`/skills/${skill.slug}`} class="skill-card">
+            <div class="skill-card__header">
+              <Icon name="cpu" size={20} />
+              <Badge variant="accent" size="sm">{skill.difficulty}</Badge>
+            </div>
+            <h3 class="skill-card__title">{skill.title}</h3>
+            <p class="skill-card__description">{skill.description}</p>
+            <div class="skill-card__footer">
+              <div class="skill-card__tags">
+                {skill.tags.slice(0, 3).map((tag) => (
+                  <Badge variant="outline" size="sm">{tag}</Badge>
+                ))}
+              </div>
+              {skill.targetAgent && (
+                <span class="skill-card__agent">
+                  <Icon name="terminal" size={12} />
+                  {skill.targetAgent}
+                </span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {skills.length === 0 && (
+      <div class="skills-page__empty">
+        <Icon name="cpu" size={48} />
+        <p>No hay skills disponibles todavía.</p>
+      </div>
+    )}
+  </div>
+</MainLayout>
+
+<style>
+  .skills-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding-top: var(--space-6);
+  }
+
+  .skills-page__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .skills-page__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-primary);
+  }
+
+  .skills-page__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .skills-page__description {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 640px;
+  }
+
+  .skills-page__stats {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .skills-page__stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  .skills-page__section-title {
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .skills-page__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .skill-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-card);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .skill-card:hover {
+    border-color: var(--color-accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .skill-card--featured {
+    border-color: var(--color-accent-primary);
+    background: linear-gradient(135deg, var(--color-bg-card) 0%, rgba(124, 58, 237, 0.04) 100%);
+  }
+
+  .skill-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-accent-secondary);
+  }
+
+  .skill-card__title {
+    font-size: var(--text-base);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+  }
+
+  .skill-card__description {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+    line-height: var(--leading-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .skill-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-default);
+  }
+
+  .skill-card__tags {
+    display: flex;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .skill-card__agent {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .skills-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-16) 0;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .skills-page__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .skills-page__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>
